@@ -88,7 +88,6 @@
           <platform>osx</platform>
           <configureArgs>
             <arg>--with-lmdb=${env.LMDB_HOME}</arg>
-            <arg>--with-universal</arg>
           </configureArgs>
         </configuration>
       </plugin>

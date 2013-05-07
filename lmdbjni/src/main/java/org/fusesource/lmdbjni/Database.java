@@ -208,7 +208,6 @@ public class Database extends NativeObject implements Closeable {
         return true;
     }
 
-
     public Cursor openCursor(Transaction tx) {
         long cursor[] = new long[1];
         checkErrorCode(mdb_cursor_open(tx.pointer(), pointer(), cursor));

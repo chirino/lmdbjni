@@ -48,10 +48,7 @@ public class Cursor extends NativeObject implements Closeable {
         checkErrorCode(mdb_cursor_renew(tx.pointer(), pointer()));
     }
 
-    // TODO: implement mdb_cursor_txn
-    // TODO: implement mdb_cursor_dbi
-
-    public Entry get(CursorOp op) {
+    public Entry get(GetOp op) {
         checkArgNotNull(op, "op");
 
         Value key = new Value();
@@ -64,7 +61,7 @@ public class Cursor extends NativeObject implements Closeable {
         return new Entry(key.toByteArray(), value.toByteArray());
     }
 
-    public Entry seek(byte[] key, CursorOp op) {
+    public Entry seek(SeekOp op, byte[] key) {
         checkArgNotNull(key, "key");
         checkArgNotNull(op, "op");
         NativeBuffer keyBuffer = NativeBuffer.create(key);

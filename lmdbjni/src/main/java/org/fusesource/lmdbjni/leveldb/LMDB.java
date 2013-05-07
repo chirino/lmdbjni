@@ -28,6 +28,9 @@ import java.util.Map;
 import java.util.NoSuchElementException;
 import java.util.concurrent.atomic.AtomicBoolean;
 
+import static org.fusesource.lmdbjni.Constants.NOMETASYNC;
+import static org.fusesource.lmdbjni.Constants.NOSYNC;
+
 /**
  * Implements the LevelDB API using LMDB.
  */
@@ -40,13 +43,14 @@ public class LMDB implements DB {
     public LMDB(File path, Options options) throws IOException {
         try {
             env = new Env();
-            env.setMapSize(1024*1024*1024*1024);
+            env.setMapSize(1024L * 1024 * 1024 * 1024);
             if (options instanceof LMDBOptions) {
                 LMDBOptions o = ((LMDBOptions) options);
                 env.setMaxReaders(o.maxReaders());
                 env.setMapSize(o.mapSize());
                 env.addFlags(o.openFlags);
             }
+            env.addFlags(NOSYNC| NOMETASYNC);
             env.open(path.getCanonicalPath());
             db = env.openDatabase("x");
         } catch (LMDBException e) {
@@ -63,6 +67,14 @@ public class LMDB implements DB {
         } catch (LMDBException e) {
             throw new DBException(e.getMessage(), e);
         }
+    }
+
+    public Database getDatabase() {
+        return db;
+    }
+
+    public Env getEnv() {
+        return env;
     }
 
     public byte[] get(byte[] key) throws DBException {
@@ -298,7 +310,7 @@ public class LMDB implements DB {
         public void seekToFirst() {
             try {
                 prev = null;
-                next = cursor.get(CursorOp.FIRST);
+                next = cursor.get(GetOp.FIRST);
             } catch (LMDBException e) {
                 throw new DBException(e.getMessage(), e);
             }
@@ -307,7 +319,7 @@ public class LMDB implements DB {
         public void seekToLast() {
             try {
                 next = null;
-                prev = cursor.get(CursorOp.LAST);
+                prev = cursor.get(GetOp.LAST);
             } catch (LMDBException e) {
                 throw new DBException(e.getMessage(), e);
             }
@@ -315,9 +327,9 @@ public class LMDB implements DB {
 
         public void seek(byte[] bytes) {
             try {
-                next = cursor.seek(bytes, CursorOp.SET_RANGE);
-                prev = cursor.seek(bytes, CursorOp.PREV);
-                cursor.seek(bytes, CursorOp.NEXT);
+                next = cursor.seek(SeekOp.RANGE, bytes);
+                prev = cursor.get(GetOp.PREV);
+                cursor.get(GetOp.NEXT);
             } catch (LMDBException e) {
                 throw new DBException(e.getMessage(), e);
             }
@@ -330,7 +342,7 @@ public class LMDB implements DB {
             try {
                 Entry rc = prev;
                 next = prev;
-                prev = cursor.get(CursorOp.PREV);
+                prev = cursor.get(GetOp.PREV);
                 return rc;
             } catch (LMDBException e) {
                 throw new DBException(e.getMessage(), e);
@@ -345,7 +357,7 @@ public class LMDB implements DB {
             try {
                 Entry rc = next;
                 prev = next;
-                next = cursor.get(CursorOp.NEXT);
+                next = cursor.get(GetOp.NEXT);
                 return rc;
             } catch (LMDBException e) {
                 throw new DBException(e.getMessage(), e);

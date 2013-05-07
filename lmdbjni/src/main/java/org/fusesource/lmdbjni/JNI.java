@@ -264,7 +264,19 @@ class JNI {
        public long me_maxreaders;
        @JniField(cast = "unsigned int")
        public long me_numreaders;
-   }
+
+        @Override
+        public String toString() {
+            return "{" +
+                    "me_last_pgno=" + me_last_pgno +
+                    ", me_mapaddr=" + me_mapaddr +
+                    ", me_mapsize=" + me_mapsize +
+                    ", me_last_txnid=" + me_last_txnid +
+                    ", me_maxreaders=" + me_maxreaders +
+                    ", me_numreaders=" + me_numreaders +
+                    '}';
+        }
+    }
 
     /**
      * <a href="http://symas.com/mdb/doc/group__mdb.html#structMDB_stat">details</a>
@@ -283,6 +295,18 @@ class JNI {
         public long ms_overflow_pages;
         @JniField(cast = "size_t")
         public long ms_entries;
+
+        @Override
+        public String toString() {
+            return "{" +
+                    "ms_branch_pages=" + ms_branch_pages +
+                    ", ms_psize=" + ms_psize +
+                    ", ms_depth=" + ms_depth +
+                    ", ms_leaf_pages=" + ms_leaf_pages +
+                    ", ms_overflow_pages=" + ms_overflow_pages +
+                    ", ms_entries=" + ms_entries +
+                    '}';
+        }
     }
 
     /**

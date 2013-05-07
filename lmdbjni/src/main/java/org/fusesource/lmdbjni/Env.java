@@ -145,7 +145,7 @@ public class Env extends NativeObject implements Closeable {
 
     public Database openDatabase(String name) {
         checkArgNotNull(name, "name");
-        return openDatabase(name, Flags.CREATE);
+        return openDatabase(name, Constants.CREATE);
     }
     public Database openDatabase(String name, int flags) {
         checkArgNotNull(name, "name");

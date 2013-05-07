@@ -23,7 +23,7 @@ import static org.fusesource.lmdbjni.JNI.*;
 /**
  * @author <a href="http://hiramchirino.com">Hiram Chirino</a>
  */
-public enum CursorOp {
+public enum GetOp {
 
     FIRST          (MDB_FIRST         ) ,
     FIRST_DUP      (MDB_FIRST_DUP     ) ,
@@ -39,14 +39,11 @@ public enum CursorOp {
     NEXT_NODUP     (MDB_NEXT_NODUP    ) ,
     PREV           (MDB_PREV          ) ,
     PREV_DUP       (MDB_PREV_DUP      ) ,
-    PREV_NODUP     (MDB_PREV_NODUP    ) ,
-    SET            (MDB_SET           ) ,
-    SET_KEY        (MDB_SET_KEY       ) ,
-    SET_RANGE      (MDB_SET_RANGE     );
+    PREV_NODUP     (MDB_PREV_NODUP    );
 
     private final int value;
 
-    CursorOp(int value) {
+    GetOp(int value) {
 
         this.value = value;
     }

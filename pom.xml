@@ -1,0 +1,347 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  Copyright (C) 2013, RedHat, Inc.
+
+      http://www.redhat.com/
+
+  Licensed under the Apache License, Version 2.0 (the "License");
+  you may not use this file except in compliance with the License.
+  You may obtain a copy of the License at
+
+     http://www.apache.org/licenses/LICENSE-2.0
+
+  Unless required by applicable law or agreed to in writing, software
+  distributed under the License is distributed on an "AS IS" BASIS,
+  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  See the License for the specific language governing permissions and
+  limitations under the License.
+-->
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+
+  <modelVersion>4.0.0</modelVersion>
+  <parent>
+    <groupId>org.fusesource</groupId>
+    <artifactId>fusesource-pom</artifactId>
+    <version>1.9</version>
+  </parent>
+
+  <groupId>org.fusesource.lmdbjni</groupId>
+  <artifactId>lmdbjni-project</artifactId>
+  <version>99-master-SNAPSHOT</version>
+  <packaging>pom</packaging>
+  
+  <name>${project.artifactId}</name>
+  <description>lmdbjni is a jni library for accessing leveldb.</description>
+  
+  <properties>
+    <forge-project-id>lmdbjni</forge-project-id>
+    <forge-project-id-uc>LMDBJNI</forge-project-id-uc>
+    <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+    <hawtjni-version>1.6</hawtjni-version>
+    <leveldb-api-version>0.5</leveldb-api-version>
+  </properties>
+  
+  <modules>
+    <module>lmdbjni</module>
+  </modules>
+  
+  <url>http://${forge-project-id}.fusesource.org</url>
+  <inceptionYear>2009</inceptionYear>
+
+  <issueManagement>
+    <system>github</system>
+    <url>https://github.com/fusesource/lmdbjni/issues</url>
+  </issueManagement>
+  
+  <mailingLists>
+    <mailingList>
+      <name>${forge-project-id} dev</name>
+      <post>${forge-project-id}-dev@fusesource.org</post>
+      <subscribe>${forge-project-id}-dev-subscribe@fusesource.org</subscribe>
+    </mailingList>
+    <mailingList>
+      <name>${forge-project-id} commits</name>
+      <post>${forge-project-id}-commits@fusesource.org</post>
+      <subscribe>${forge-project-id}-commits-subscribe@fusesource.org</subscribe>
+    </mailingList>
+  </mailingLists>
+
+  <licenses>
+    <license>
+      <name>The Apache Software License, Version 2.0</name>
+      <url>http://www.apache.org/licenses/LICENSE-2.0.txt</url>
+      <distribution>repo</distribution>
+    </license>
+  </licenses>
+  
+  <scm>
+    <connection>scm:git:git://github.com/fusesource/lmdbjni.git</connection>
+    <developerConnection>scm:git:git@github.com:fusesource/lmdbjni.git</developerConnection>
+    <url>https://github.com/fusesource/lmdbjni</url>
+  </scm>
+
+  <distributionManagement>
+    <site>
+      <id>website.fusesource.org</id>
+      <name>website</name>
+      <url>dav:http://fusesource.com/forge/dav/${forge-project-id}/maven/${project.version}</url>
+    </site>
+  </distributionManagement> 
+  
+  <developers>
+    <developer>
+      <id>chirino</id>
+      <name>Hiram Chirino</name>
+      <email>hiram@hiramchirino.com</email>
+      <url>http://hiramchirino.com</url>
+      <timezone>GMT-5</timezone>
+    </developer>
+  </developers>
+  
+  <dependencies>
+    <dependency>
+      <groupId>junit</groupId>
+      <artifactId>junit</artifactId>
+      <version>4.7</version>
+      <scope>test</scope>
+    </dependency>
+  </dependencies>
+  
+  <build>
+    <plugins>
+    
+      <!-- the older clean plugin has trouble deleting directories with symlinks in them -->
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-clean-plugin</artifactId>
+        <version>2.3</version>
+      </plugin>
+      
+      
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-compiler-plugin</artifactId>
+        <configuration>
+          <source>1.5</source>
+          <target>1.5</target>
+        </configuration>
+      </plugin>
+      
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-surefire-plugin</artifactId>
+        <version>2.4.3</version>
+        <configuration>
+          <redirectTestOutputToFile>true</redirectTestOutputToFile>
+          <forkMode>once</forkMode>
+          <argLine>-ea</argLine>
+          <failIfNoTests>false</failIfNoTests>
+          <workingDirectory>${project.build.directory}</workingDirectory>
+          <includes>
+            <include>**/*Test.java</include>
+          </includes>
+        </configuration>
+      </plugin>      
+    </plugins>
+  </build>
+
+  <reporting>
+    <plugins>
+      <plugin>
+        <groupId>org.codehaus.mojo</groupId>
+        <artifactId>jxr-maven-plugin</artifactId>
+        <version>2.0-beta-1</version>
+        <configuration>
+          <aggregate>true</aggregate>
+        </configuration>
+      </plugin>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-javadoc-plugin</artifactId>
+        <version>2.6</version>
+        <configuration>
+          <excludePackageNames>*.internal</excludePackageNames>
+          <linksource>true</linksource>
+          <links>
+            <link>http://java.sun.com/j2se/1.5.0/docs/api</link>
+          </links>
+        </configuration>
+      </plugin>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-project-info-reports-plugin</artifactId>
+        <version>2.1.1</version>
+        <reportSets>
+          <reportSet>
+            <reports>
+              <report>index</report>
+              <report>sumary</report>
+              <report>plugins</report>
+              <report>dependencies</report>
+              <report>mailing-list</report>
+              <report>issue-tracking</report>
+              <report>license</report>
+              <report>scm</report>
+            </reports>
+          </reportSet>
+        </reportSets>
+      </plugin>
+      <plugin>
+        <groupId>org.codehaus.mojo</groupId>
+        <artifactId>surefire-report-maven-plugin</artifactId>
+        <version>2.0-beta-1</version>
+      </plugin>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-plugin-plugin</artifactId>
+        <version>2.5</version>
+      </plugin>
+    </plugins>
+  </reporting>
+
+  <profiles>
+    
+    <profile>
+      <id>download</id>
+      <repositories>
+        <repository>
+          <id>fusesource.nexus.snapshot</id>
+          <name>FuseSource Community Snapshot Repository</name>
+          <url>http://repo.fusesource.com/nexus/content/groups/public-snapshots</url>
+        </repository>
+        <repository>
+          <id>sonatype-nexus</id>
+          <name>Sonatype Nexus</name>
+          <url>https://oss.sonatype.org/content/repositories/public</url>
+          <releases><enabled>true</enabled></releases>
+          <snapshots><enabled>true</enabled></snapshots>
+        </repository>
+      </repositories>
+      <pluginRepositories>
+        <pluginRepository>
+          <id>fusesource.nexus.snapshot</id>
+          <name>FuseSource Community Snapshot Repository</name>
+          <url>http://repo.fusesource.com/nexus/content/groups/public-snapshots</url>
+        </pluginRepository>
+      </pluginRepositories>
+    </profile>
+    
+    <profile>
+      <id>full</id>
+      <modules>
+        <module>lmdbjni-osx</module>
+        <module>lmdbjni-linux32</module>
+        <module>lmdbjni-linux64</module>
+        <module>lmdbjni-win32</module>
+        <module>lmdbjni-win64</module>
+        <module>lmdbjni-all</module>
+      </modules>
+    </profile>    
+
+    <profile>
+      <id>all</id>
+      <modules>
+        <module>lmdbjni-all</module>
+      </modules>
+    </profile>    
+    <profile>
+      <id>osx</id>
+      <modules>
+        <module>lmdbjni-osx</module>
+      </modules>
+    </profile>
+
+    <profile>
+      <id>linux32</id>
+      <modules>
+        <module>lmdbjni-linux32</module>
+      </modules>
+    </profile>
+
+    <profile>
+      <id>linux64</id>
+      <modules>
+        <module>lmdbjni-linux64</module>
+      </modules>
+    </profile>
+
+    <profile>
+      <id>win32</id>
+      <properties>
+        <skipAutogen>true</skipAutogen>
+      </properties>
+      <modules>
+        <module>lmdbjni-win32</module>
+      </modules>
+    </profile>
+
+    <profile>
+      <id>win64</id>
+      <properties>
+        <skipAutogen>true</skipAutogen>
+      </properties>
+      <modules>
+        <module>lmdbjni-win64</module>
+      </modules>
+    </profile>
+
+    <!--
+        Do a license check by running       : mvn -P license license:check
+        UPdate the license check by running : mvn -P license license:format
+    -->
+    <profile>
+      <id>license</id>
+      <build>
+        <plugins>
+          <plugin>
+            <groupId>com.mycila.maven-license-plugin</groupId>
+            <artifactId>maven-license-plugin</artifactId>
+            <version>1.6.0</version>
+            <configuration>
+              <quiet>false</quiet>
+              <header>src/main/resources/license-header.txt</header>
+              <aggregate>true</aggregate>
+              <includes>
+                  <include>src/**</include>
+                  <include>**/pom.xml</include>
+              </includes>
+              <excludes>
+                <exclude>**/version.txt</exclude>
+                <exclude>**/license.txt</exclude>
+                <exclude>**/LICENSE.txt</exclude>
+                <exclude>**/LICENSE</exclude>
+                <exclude>**/.svn/**</exclude>
+                <exclude>**/.git/**</exclude>
+
+                <!-- ignore files produced during a build -->
+                <exclude>**/target/**</exclude>
+
+                <!-- ignore binary files -->
+                <exclude>**/*.jpg</exclude>
+                <exclude>**/*.png</exclude>
+                <exclude>**/*.gif</exclude>
+                <exclude>**/*.ico</exclude>
+                <exclude>**/*.keystore</exclude>
+
+              </excludes>
+              <useDefaultExcludes>false</useDefaultExcludes>
+              <mapping>
+                  <jj>JAVADOC_STYLE</jj>
+                  <proto>DOUBLESLASH_STYLE</proto>
+                  <index>SCRIPT_STYLE</index>
+              </mapping>
+            </configuration>
+            <executions>
+              <execution>
+                <goals>
+                  <goal>check</goal>
+                </goals>
+              </execution>
+            </executions>
+          </plugin>
+        </plugins>
+      </build>
+    </profile>
+
+  </profiles>
+</project>

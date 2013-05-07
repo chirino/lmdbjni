@@ -55,29 +55,6 @@ public class LMDBFactory implements DBFactory {
         VERSION = v;
     }
 
-    public static byte[] bytes(String value) {
-        if( value == null) {
-            return null;
-        }
-        try {
-            return value.getBytes("UTF-8");
-        } catch (UnsupportedEncodingException e) {
-            throw new RuntimeException(e);
-        }
-    }
-
-    public static String asString(byte value[]) {
-        if( value == null) {
-            return null;
-        }
-        try {
-            return new String(value, "UTF-8");
-        } catch (UnsupportedEncodingException e) {
-            throw new RuntimeException(e);
-        }
-    }
-
-
     public DB open(File path, Options options) throws IOException {
         checkArgNotNull(path, "path");
         checkArgNotNull(options, "options");

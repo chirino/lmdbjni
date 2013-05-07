@@ -18,12 +18,14 @@
 
 package org.fusesource.lmdbjni;
 
+import java.io.UnsupportedEncodingException;
+
 import static org.fusesource.lmdbjni.JNI.*;
 
 /**
  * @author <a href="http://hiramchirino.com">Hiram Chirino</a>
  */
-public interface Constants {
+public class Constants {
 
     public static final int FIXEDMAP    = MDB_FIXEDMAP    ;
     public static final int NOSUBDIR    = MDB_NOSUBDIR    ;
@@ -74,4 +76,26 @@ public interface Constants {
 
     public static final SeekOp KEY        = SeekOp.KEY;
     public static final SeekOp RANGE      = SeekOp.RANGE;
+
+    public static byte[] bytes(String value) {
+        if( value == null) {
+            return null;
+        }
+        try {
+            return value.getBytes("UTF-8");
+        } catch (UnsupportedEncodingException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    public static String string(byte value[]) {
+        if( value == null) {
+            return null;
+        }
+        try {
+            return new String(value, "UTF-8");
+        } catch (UnsupportedEncodingException e) {
+            throw new RuntimeException(e);
+        }
+    }
 }

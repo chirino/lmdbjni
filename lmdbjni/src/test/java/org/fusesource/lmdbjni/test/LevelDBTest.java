@@ -19,28 +19,19 @@
 package org.fusesource.lmdbjni.test;
 
 import junit.framework.TestCase;
-import org.fusesource.lmdbjni.Database;
-import org.fusesource.lmdbjni.Env;
 import org.fusesource.lmdbjni.leveldb.LMDB;
 import org.fusesource.lmdbjni.leveldb.LMDBFactory;
-import org.iq80.leveldb.DB;
-import org.iq80.leveldb.DBException;
-import org.iq80.leveldb.DBFactory;
-import org.iq80.leveldb.Options;
-import org.junit.Ignore;
+import org.iq80.leveldb.*;
 import org.junit.Test;
 
 import java.io.File;
 import java.io.IOException;
+import java.nio.ByteBuffer;
+import java.util.ArrayList;
 import java.util.Arrays;
 
-import org.iq80.leveldb.*;
-
-import java.nio.ByteBuffer;
-import java.util.*;
-
-
-import static org.fusesource.lmdbjni.leveldb.LMDBFactory.*;
+import static org.fusesource.lmdbjni.Constants.bytes;
+import static org.fusesource.lmdbjni.Constants.string;
 
 /**
  * A Unit test for the LevelDB API interface to LMDB.
@@ -131,7 +122,7 @@ public class LevelDBTest extends TestCase {
 
         DBIterator iterator = db.iterator();
         for (iterator.seekToFirst(); iterator.hasNext(); iterator.next()) {
-            actual.add(asString(iterator.peekNext().getValue()));
+            actual.add(string(iterator.peekNext().getValue()));
         }
         iterator.close();
 
@@ -145,13 +136,13 @@ public class LevelDBTest extends TestCase {
 
         iterator = db.iterator();
         for (iterator.seek(bytes("b")); iterator.hasNext(); iterator.next()) {
-            actual.add(asString(iterator.peekNext().getValue()));
+            actual.add(string(iterator.peekNext().getValue()));
         }
         iterator.close();
 
         iterator = db.iterator();
         for (iterator.seek(bytes("b")); iterator.hasPrev(); iterator.prev()) {
-            actual.add(asString(iterator.peekPrev().getValue()));
+            actual.add(string(iterator.peekPrev().getValue()));
         }
         iterator.close();
 
@@ -217,7 +208,7 @@ public class LevelDBTest extends TestCase {
 
         DBIterator iterator = db.iterator();
         for (iterator.seekToFirst(); iterator.hasNext(); iterator.next()) {
-            actual.add(asString(iterator.peekNext().getKey()));
+            actual.add(string(iterator.peekNext().getKey()));
         }
         iterator.close();
         assertEquals(expecting, actual);

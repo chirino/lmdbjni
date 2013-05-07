@@ -19,15 +19,16 @@
 package org.fusesource.lmdbjni.test;
 
 import junit.framework.TestCase;
-import org.fusesource.lmdbjni.Database;
-import org.fusesource.lmdbjni.Env;
+import org.fusesource.lmdbjni.*;
 import org.junit.Test;
 
 import java.io.File;
 import java.io.IOException;
 import java.util.Arrays;
 
-import static org.fusesource.lmdbjni.leveldb.LMDBFactory.bytes;
+import static org.fusesource.lmdbjni.Constants.FIRST;
+import static org.fusesource.lmdbjni.Constants.NEXT;
+import static org.fusesource.lmdbjni.Constants.*;
 
 /**
  * Unit tests for the LMDB API.
@@ -53,6 +54,16 @@ public class EnvTest extends TestCase {
         Env env = new Env();
         env.open(path);
         Database db = env.openDatabase("foo");
+
+        Transaction tx = env.createTransaction();
+        Cursor cursor = db.openCursor(tx);
+
+        for( Entry entry = cursor.get(FIRST); entry !=null; entry = cursor.get(NEXT) ) {
+            String key = string(entry.getKey());
+            String value = string(entry.getValue());
+            System.out.println(key+" = "+value);
+        }
+
 
         db.put(bytes("Tampa"), bytes("green"));
         db.put(bytes("London"), bytes("red"));

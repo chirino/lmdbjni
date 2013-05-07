@@ -50,6 +50,7 @@
       <groupId>org.iq80.leveldb</groupId>
       <artifactId>leveldb-api</artifactId>
       <version>${leveldb-api-version}</version>
+      <optional>true</optional>
     </dependency>
   </dependencies>
 

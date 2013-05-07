@@ -325,9 +325,8 @@
     <profile>
       <id>full</id>
       <modules>
-        <module>lmdbjni-osx</module>
+        <module>lmdbjni-osx64</module>
         <module>lmdbjni-linux64</module>
-        <module>lmdbjni-win64</module>
         <module>lmdbjni-all</module>
       </modules>
     </profile>    
@@ -339,9 +338,9 @@
       </modules>
     </profile>    
     <profile>
-      <id>osx</id>
+      <id>osx64</id>
       <modules>
-        <module>lmdbjni-osx</module>
+        <module>lmdbjni-osx64</module>
       </modules>
     </profile>
 
@@ -352,15 +351,6 @@
       </modules>
     </profile>
 
-    <profile>
-      <id>win64</id>
-      <properties>
-        <skipAutogen>true</skipAutogen>
-      </properties>
-      <modules>
-        <module>lmdbjni-win64</module>
-      </modules>
-    </profile>
 
     <!--
         Do a license check by running       : mvn -P license license:check

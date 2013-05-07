@@ -33,13 +33,19 @@
   <version>99-master-SNAPSHOT</version>
   
   <name>${project.artifactId}</name>
-  <description>The lmdbjni linux 64 native libraries</description>
+  <description>The lmdbjni linux 64 bit native libraries</description>
       
   <dependencies>
     <dependency>
       <groupId>org.fusesource.lmdbjni</groupId>
       <artifactId>lmdbjni</artifactId>
       <version>99-master-SNAPSHOT</version>
+    </dependency>
+    <dependency>
+      <groupId>org.iq80.leveldb</groupId>
+      <artifactId>leveldb-api</artifactId>
+      <version>${leveldb-api-version}</version>
+      <optional>true</optional>
     </dependency>
   </dependencies>
 

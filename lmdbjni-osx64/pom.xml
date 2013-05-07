@@ -29,11 +29,11 @@
   </parent>
 
   <groupId>org.fusesource.lmdbjni</groupId>
-  <artifactId>lmdbjni-osx</artifactId>
+  <artifactId>lmdbjni-osx64</artifactId>
   <version>99-master-SNAPSHOT</version>
   
   <name>${project.artifactId}</name>
-  <description>The lmdbjni OS X universal native libraries</description>
+  <description>The lmdbjni OS X 64 bit native libraries</description>
 
   <dependencies>
     <dependency>
@@ -41,13 +41,11 @@
       <artifactId>lmdbjni</artifactId>
       <version>99-master-SNAPSHOT</version>
     </dependency>
-
     <dependency>
-      <groupId>org.fusesource.lmdbjni</groupId>
-      <artifactId>lmdbjni</artifactId>
-      <version>99-master-SNAPSHOT</version>
-      <type>test-jar</type>
-      <scope>test</scope>
+      <groupId>org.iq80.leveldb</groupId>
+      <artifactId>leveldb-api</artifactId>
+      <version>${leveldb-api-version}</version>
+      <optional>true</optional>
     </dependency>
   </dependencies>
 
@@ -85,7 +83,6 @@
             <classifier>native-src</classifier>
             <type>zip</type>
           </nativeSrcDependency>
-          <platform>osx</platform>
           <configureArgs>
             <arg>--with-lmdb=${env.LMDB_HOME}</arg>
           </configureArgs>

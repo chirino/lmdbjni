@@ -61,232 +61,206 @@ public class LevelDBTest extends TestCase {
         return rc;
     }
 
-    @Test
-    public void testCRUDx() throws IOException {
-
-        String path = getTestDirectory(getName()).getCanonicalPath();
-        Env env = new Env();
-        env.open(path);
-        Database db = env.openDatabase("foo");
-
-        db.put(bytes("Tampa"), bytes("green"));
-        db.put(bytes("London"), bytes("red"));
-        db.put(bytes("New York"), bytes("blue"));
-
-        assertEquals(db.get(bytes("Tampa")), bytes("green"));
-        assertEquals(db.get(bytes("London")), bytes("red"));
-        assertEquals(db.get(bytes("New York")), bytes("blue"));
-
-        assertTrue(db.delete(bytes("New York")));
-        assertNull(db.get(bytes("New York")));
-
-        // We should not be able to delete it again.
-        assertFalse(db.delete(bytes("New York")));
-
-        db.close();
-        env.close();
-    }
-
-    @Test
-    public void testOpen() throws IOException {
-
-        Options options = new Options().createIfMissing(true);
-
-        File path = getTestDirectory(getName());
-        DB db = factory.open(path, options);
-
-        db.close();
-
-        // Try again.. this time we expect a failure since it exists.
-        options = new Options().errorIfExists(true);
-        try {
-            factory.open(path, options);
-            fail("Expected exception.");
-        } catch (IOException e) {
-        }
-
-    }
-
-    @Test
-    public void testCRUD() throws IOException, DBException {
-
-        Options options = new Options().createIfMissing(true);
-
-        File path = getTestDirectory(getName());
-        DB db = factory.open(path, options);
-
-        WriteOptions wo = new WriteOptions().sync(false);
-        ReadOptions ro = new ReadOptions().fillCache(true).verifyChecksums(true);
-
-        db.put(bytes("Tampa"), bytes("green"));
-        db.put(bytes("London"), bytes("red"));
-        db.put(bytes("New York"), bytes("blue"));
-
-        assertEquals(db.get(bytes("Tampa"), ro), bytes("green"));
-        assertEquals(db.get(bytes("London"), ro), bytes("red"));
-        assertEquals(db.get(bytes("New York"), ro), bytes("blue"));
-
-        db.delete(bytes("New York"), wo);
-        assertNull(db.get(bytes("New York"), ro));
-
-        // leveldb does not consider deleting something that does not exist an error.
-        db.delete(bytes("New York"), wo);
-
-        db.close();
-    }
-
-    @Test
-    public void testIterator() throws IOException, DBException {
-
-        Options options = new Options().createIfMissing(true);
-
-        File path = getTestDirectory(getName());
-        DB db = factory.open(path, options);
-
-        db.put(bytes("a"), bytes("av"));
-        db.put(bytes("c"), bytes("cv"));
-        db.put(bytes("e"), bytes("ev"));
-
-        ArrayList<String> expecting = new ArrayList<String>();
-        expecting.add("av");
-        expecting.add("cv");
-        expecting.add("ev");
-
-        ArrayList<String> actual = new ArrayList<String>();
-
-        DBIterator iterator = db.iterator();
-        for (iterator.seekToFirst(); iterator.hasNext(); iterator.next()) {
-            actual.add(asString(iterator.peekNext().getValue()));
-        }
-        iterator.close();
-
-        assertEquals(expecting, actual);
-
-        expecting = new ArrayList<String>();
-        expecting.add("cv");
-        expecting.add("ev");
-
-        actual = new ArrayList<String>();
-
-        iterator = db.iterator();
-        for (iterator.seek(bytes("b")); iterator.hasNext(); iterator.next()) {
-            actual.add(asString(iterator.peekNext().getValue()));
-        }
-        iterator.close();
-
-        iterator = db.iterator();
-        for (iterator.seek(bytes("b")); iterator.hasPrev(); iterator.prev()) {
-            actual.add(asString(iterator.peekPrev().getValue()));
-        }
-        iterator.close();
-
-        db.close();
-    }
-
-    @Test
-    public void testSnapshot() throws IOException, DBException {
-
-        Options options = new Options().createIfMissing(true);
-
-        File path = getTestDirectory(getName());
-        DB db = factory.open(path, options);
-
-        db.put(bytes("Tampa"), bytes("green"));
-        db.put(bytes("London"), bytes("red"));
-        db.delete(bytes("New York"));
-
-        ReadOptions ro = new ReadOptions().snapshot(db.getSnapshot());
-
-        db.put(bytes("New York"), bytes("blue"));
-
-        assertEquals(db.get(bytes("Tampa"), ro), bytes("green"));
-        assertEquals(db.get(bytes("London"), ro), bytes("red"));
-
-        // Should not be able to get "New York" since it was added
-        // after the snapshot
-        assertNull(db.get(bytes("New York"), ro));
-
-        ro.snapshot().close();
-
-        // Now try again without the snapshot..
-        ro.snapshot(null);
-        assertEquals(db.get(bytes("New York"), ro), bytes("blue"));
-
-        db.close();
-    }
-
-    @Test
-    public void testWriteBatch() throws IOException, DBException {
-
-        Options options = new Options().createIfMissing(true);
-
-        File path = getTestDirectory(getName());
-        DB db = factory.open(path, options);
-
-        db.put(bytes("NA"), bytes("Na"));
-
-        WriteBatch batch = db.createWriteBatch();
-        batch.delete(bytes("NA"));
-        batch.put(bytes("Tampa"), bytes("green"));
-        batch.put(bytes("London"), bytes("red"));
-        batch.put(bytes("New York"), bytes("blue"));
-        db.write(batch);
-        batch.close();
-
-        ArrayList<String> expecting = new ArrayList<String>();
-        expecting.add("London");
-        expecting.add("New York");
-        expecting.add("Tampa");
-
-        ArrayList<String> actual = new ArrayList<String>();
-
-        DBIterator iterator = db.iterator();
-        for (iterator.seekToFirst(); iterator.hasNext(); iterator.next()) {
-            actual.add(asString(iterator.peekNext().getKey()));
-        }
-        iterator.close();
-        assertEquals(expecting, actual);
-
-        db.close();
-    }
-
-//    @Ignore
-//    public void testIssue26() throws IOException {
+//    @Test
+//    public void testOpen() throws IOException {
 //
-//        LMDBFactory.pushMemoryPool(1024 * 512);
+//        Options options = new Options().createIfMissing(true);
+//
+//        File path = getTestDirectory(getName());
+//        DB db = factory.open(path, options);
+//
+//        db.close();
+//
+//        // Try again.. this time we expect a failure since it exists.
+//        options = new Options().errorIfExists(true);
 //        try {
-//            Options options = new Options();
-//            options.createIfMissing(true);
-//
-//            DB db = factory.open(getTestDirectory(getName()), options);
-//
-//            for (int i = 0; i < 1024 * 1024; i++) {
-//                byte[] key = ByteBuffer.allocate(4).putInt(i).array();
-//                byte[] value = ByteBuffer.allocate(4).putInt(-i).array();
-//                db.put(key, value);
-//                assertTrue(Arrays.equals(db.get(key), value));
-//            }
-//            db.close();
-//        } finally {
-//            LMDBFactory.popMemoryPool();
+//            factory.open(path, options);
+//            fail("Expected exception.");
+//        } catch (IOException e) {
 //        }
 //
 //    }
+//
+//    @Test
+//    public void testCRUD() throws IOException, DBException {
+//
+//        Options options = new Options().createIfMissing(true);
+//
+//        File path = getTestDirectory(getName());
+//        DB db = factory.open(path, options);
+//
+//        WriteOptions wo = new WriteOptions().sync(false);
+//        ReadOptions ro = new ReadOptions().fillCache(true).verifyChecksums(true);
+//
+//        db.put(bytes("Tampa"), bytes("green"));
+//        db.put(bytes("London"), bytes("red"));
+//        db.put(bytes("New York"), bytes("blue"));
+//
+//        assertEquals(db.get(bytes("Tampa"), ro), bytes("green"));
+//        assertEquals(db.get(bytes("London"), ro), bytes("red"));
+//        assertEquals(db.get(bytes("New York"), ro), bytes("blue"));
+//
+//        db.delete(bytes("New York"), wo);
+//        assertNull(db.get(bytes("New York"), ro));
+//
+//        // leveldb does not consider deleting something that does not exist an error.
+//        db.delete(bytes("New York"), wo);
+//
+//        db.close();
+//    }
+//
+//    @Test
+//    public void testIterator() throws IOException, DBException {
+//
+//        Options options = new Options().createIfMissing(true);
+//
+//        File path = getTestDirectory(getName());
+//        DB db = factory.open(path, options);
+//
+//        db.put(bytes("a"), bytes("av"));
+//        db.put(bytes("c"), bytes("cv"));
+//        db.put(bytes("e"), bytes("ev"));
+//
+//        ArrayList<String> expecting = new ArrayList<String>();
+//        expecting.add("av");
+//        expecting.add("cv");
+//        expecting.add("ev");
+//
+//        ArrayList<String> actual = new ArrayList<String>();
+//
+//        DBIterator iterator = db.iterator();
+//        for (iterator.seekToFirst(); iterator.hasNext(); iterator.next()) {
+//            actual.add(asString(iterator.peekNext().getValue()));
+//        }
+//        iterator.close();
+//
+//        assertEquals(expecting, actual);
+//
+//        expecting = new ArrayList<String>();
+//        expecting.add("cv");
+//        expecting.add("ev");
+//
+//        actual = new ArrayList<String>();
+//
+//        iterator = db.iterator();
+//        for (iterator.seek(bytes("b")); iterator.hasNext(); iterator.next()) {
+//            actual.add(asString(iterator.peekNext().getValue()));
+//        }
+//        iterator.close();
+//
+//        iterator = db.iterator();
+//        for (iterator.seek(bytes("b")); iterator.hasPrev(); iterator.prev()) {
+//            actual.add(asString(iterator.peekPrev().getValue()));
+//        }
+//        iterator.close();
+//
+//        db.close();
+//    }
+//
+//    @Test
+//    public void testSnapshot() throws IOException, DBException {
+//
+//        Options options = new Options().createIfMissing(true);
+//
+//        File path = getTestDirectory(getName());
+//        DB db = factory.open(path, options);
+//
+//        db.put(bytes("Tampa"), bytes("green"));
+//        db.put(bytes("London"), bytes("red"));
+//        db.delete(bytes("New York"));
+//
+//        ReadOptions ro = new ReadOptions().snapshot(db.getSnapshot());
+//
+//        db.put(bytes("New York"), bytes("blue"));
+//
+//        assertEquals(db.get(bytes("Tampa"), ro), bytes("green"));
+//        assertEquals(db.get(bytes("London"), ro), bytes("red"));
+//
+//        // Should not be able to get "New York" since it was added
+//        // after the snapshot
+//        assertNull(db.get(bytes("New York"), ro));
+//
+//        ro.snapshot().close();
+//
+//        // Now try again without the snapshot..
+//        ro.snapshot(null);
+//        assertEquals(db.get(bytes("New York"), ro), bytes("blue"));
+//
+//        db.close();
+//    }
+//
+//    @Test
+//    public void testWriteBatch() throws IOException, DBException {
+//
+//        Options options = new Options().createIfMissing(true);
+//
+//        File path = getTestDirectory(getName());
+//        DB db = factory.open(path, options);
+//
+//        db.put(bytes("NA"), bytes("Na"));
+//
+//        WriteBatch batch = db.createWriteBatch();
+//        batch.delete(bytes("NA"));
+//        batch.put(bytes("Tampa"), bytes("green"));
+//        batch.put(bytes("London"), bytes("red"));
+//        batch.put(bytes("New York"), bytes("blue"));
+//        db.write(batch);
+//        batch.close();
+//
+//        ArrayList<String> expecting = new ArrayList<String>();
+//        expecting.add("London");
+//        expecting.add("New York");
+//        expecting.add("Tampa");
+//
+//        ArrayList<String> actual = new ArrayList<String>();
+//
+//        DBIterator iterator = db.iterator();
+//        for (iterator.seekToFirst(); iterator.hasNext(); iterator.next()) {
+//            actual.add(asString(iterator.peekNext().getKey()));
+//        }
+//        iterator.close();
+//        assertEquals(expecting, actual);
+//
+//        db.close();
+//    }
 
     @Test
-    public void testIssue27() throws IOException {
+    public void testIssue26() throws IOException {
 
-        Options options = new Options();
-        options.createIfMissing(true);
-        DB db = factory.open(getTestDirectory(getName()), options);
-        db.close();
-
+        LMDBFactory.pushMemoryPool(1024 * 512);
         try {
-            db.iterator();
-            fail("Expected a DBException");
-        } catch(DBException e) {
+            Options options = new Options();
+            options.createIfMissing(true);
+
+            DB db = factory.open(getTestDirectory(getName()), options);
+
+            for (int i = 0; i < 1024 * 1024; i++) {
+                byte[] key = ByteBuffer.allocate(4).putInt(i).array();
+                byte[] value = ByteBuffer.allocate(4).putInt(-i).array();
+                db.put(key, value);
+                assertTrue(Arrays.equals(db.get(key), value));
+            }
+            db.close();
+        } finally {
+            LMDBFactory.popMemoryPool();
         }
 
     }
+
+//    @Test
+//    public void testIssue27() throws IOException {
+//
+//        Options options = new Options();
+//        options.createIfMissing(true);
+//        DB db = factory.open(getTestDirectory(getName()), options);
+//        db.close();
+//
+//        try {
+//            db.iterator();
+//            fail("Expected a DBException");
+//        } catch(DBException e) {
+//        }
+//
+//    }
 
 }

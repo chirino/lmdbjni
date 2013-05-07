@@ -230,9 +230,7 @@
       <id>full</id>
       <modules>
         <module>lmdbjni-osx</module>
-        <module>lmdbjni-linux32</module>
         <module>lmdbjni-linux64</module>
-        <module>lmdbjni-win32</module>
         <module>lmdbjni-win64</module>
         <module>lmdbjni-all</module>
       </modules>
@@ -252,26 +250,9 @@
     </profile>
 
     <profile>
-      <id>linux32</id>
-      <modules>
-        <module>lmdbjni-linux32</module>
-      </modules>
-    </profile>
-
-    <profile>
       <id>linux64</id>
       <modules>
         <module>lmdbjni-linux64</module>
-      </modules>
-    </profile>
-
-    <profile>
-      <id>win32</id>
-      <properties>
-        <skipAutogen>true</skipAutogen>
-      </properties>
-      <modules>
-        <module>lmdbjni-win32</module>
       </modules>
     </profile>
 

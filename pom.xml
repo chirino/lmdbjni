@@ -142,6 +142,102 @@
           </includes>
         </configuration>
       </plugin>      
+      
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-site-plugin</artifactId>
+        <version>3.0</version>
+        <configuration>
+          <reportPlugins>
+            <plugin>
+              <groupId>org.apache.maven.plugins</groupId>
+              <artifactId>maven-javadoc-plugin</artifactId>
+              <version>2.7</version>
+              <configuration>
+        
+                <!-- These style sheets need to be updated for javadoc 1.4
+                <stylesheetfile>stylesheet.css</stylesheetfile>
+                <resourcesArtifacts>
+                  <resourcesArtifact>
+                    <groupId>org.fusesource.mvnplugins</groupId>
+                    <artifactId>fuse-javadoc-skin</artifactId>
+                    <version>1.9</version>
+                  </resourcesArtifact>
+                </resourcesArtifacts> 
+                -->
+
+                <docfilessubdirs>true</docfilessubdirs>
+                <useStandardDocletOptions>true</useStandardDocletOptions>
+                <charset>UTF-8</charset>
+                <docencoding>UTF-8</docencoding>
+                <breakiterator>true</breakiterator>
+                <version>true</version>
+                <author>true</author>
+                <keywords>true</keywords>
+                <old>true</old>
+          
+                <doctitle>${project.name} API Reference (${project.version})</doctitle>
+                <windowtitle>${project.name} API Reference (${project.version})</windowtitle>
+                <links>
+                  <link>http://java.sun.com/j2se/1.5.0/docs/api</link>
+                </links>
+                <encoding>UTF-8</encoding>
+                <locale>en_US</locale>
+                <linksource>true</linksource>
+                <excludePackageNames>*.internal</excludePackageNames>
+              </configuration>
+            </plugin>
+          </reportPlugins>
+        </configuration>
+      </plugin>
+
+
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-javadoc-plugin</artifactId>
+        <version>2.7</version>
+
+        <dependencies>
+          <dependency>
+            <groupId>org.fusesource.mvnplugins</groupId>
+            <artifactId>fuse-javadoc-skin</artifactId>
+            <version>1.9</version>
+          </dependency>
+        </dependencies>
+        
+        <configuration>
+        
+          <!-- These style sheets need to be updated for javadoc 1.4
+          <resourcesArtifacts>
+            <resourcesArtifact>
+              <groupId>org.fusesource.mvnplugins</groupId>
+              <artifactId>fuse-javadoc-skin</artifactId>
+              <version>1.9</version>
+            </resourcesArtifact>
+          </resourcesArtifacts> 
+          -->
+
+          <docfilessubdirs>true</docfilessubdirs>
+          <useStandardDocletOptions>true</useStandardDocletOptions>
+          <charset>UTF-8</charset>
+          <docencoding>UTF-8</docencoding>
+          <breakiterator>true</breakiterator>
+          <version>true</version>
+          <author>true</author>
+          <keywords>true</keywords>
+          
+          <doctitle>${project.name} API Reference (${project.version})</doctitle>
+          <windowtitle>${project.name} API Reference (${project.version})</windowtitle>
+          <links>
+            <link>http://java.sun.com/j2se/1.5.0/docs/api</link>
+          </links>
+          <encoding>UTF-8</encoding>
+          <locale>en_US</locale>
+          <linksource>true</linksource>
+          <excludePackageNames>*.internal</excludePackageNames>
+        </configuration>
+      </plugin>
+      
     </plugins>
   </build>
 

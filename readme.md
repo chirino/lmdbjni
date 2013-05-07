@@ -130,3 +130,36 @@ Using a memory pool to make native memory allocations more efficient:
     } finally {
         Env.popMemoryPool();
     }
+
+## Optional LevelDB API Facade
+
+This project provides an optional implementation of the [LevelDB APIs](https://github.com/dain/leveldb).
+The LevelDB API is simpler than the LMDB API.  If you can live with the restricted features the LevelDB API 
+provides you might want to use the LevelDB API instead. 
+
+### Additional Maven Dependencies
+
+    <dependency>
+      <groupId>org.iq80.leveldb</groupId>
+      <artifactId>leveldb-api</artifactId>
+      <version>0.5</version>
+    </dependency>
+
+### Creating a Database using the LevelDB APIs:
+
+    import org.iq80.leveldb.*;
+    import static org.fusesource.lmdbjni.leveldb.LMDBFactory.*;
+    import java.io.*;
+    ...
+    Options options = new Options();
+    options.createIfMissing(true);
+    DB db = factory.open(new File("example"), options);
+    try {
+      // Use the db in here....
+    } finally {
+      // Make sure you close the db to shutdown the 
+      // database and avoid resource leaks.
+      db.close();
+    }
+
+

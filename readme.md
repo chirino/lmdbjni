@@ -140,6 +140,9 @@ This project provides an optional implementation of the [LevelDB APIs](https://g
 The LevelDB API is simpler than the LMDB API.  If you can live with the restricted features the LevelDB API 
 provides you might want to use the LevelDB API instead. 
 
+The [Javadocs](http://lmdbjni.fusesource.org/maven/99-master-SNAPSHOT/apidocs/org/fusesource/lmdbjni/leveldb/package-summary.html) 
+dont' have too many details yet.  Please send patches to improve them!
+
 ### Additional Maven Dependencies
 
     <dependency>

@@ -26,9 +26,10 @@ import org.iq80.leveldb.Options;
  * @author <a href="http://hiramchirino.com">Hiram Chirino</a>
  */
 public class LMDBOptions extends Options {
-    long maxReaders;
-    long mapSize;
-    int openFlags;
+
+    long maxReaders = -1;
+    long mapSize = -1;
+    int openFlags = 0;
 
     public long mapSize() {
         return mapSize;

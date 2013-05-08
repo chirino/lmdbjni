@@ -46,8 +46,12 @@ public class LMDB implements DB {
             env.setMapSize(1024L * 1024 * 1024 * 1024);
             if (options instanceof LMDBOptions) {
                 LMDBOptions o = ((LMDBOptions) options);
-                env.setMaxReaders(o.maxReaders());
-                env.setMapSize(o.mapSize());
+                if( o.maxReaders() >= 0 ) {
+                    env.setMaxReaders(o.maxReaders());
+                }
+                if( o.mapSize() >= 0 ) {
+                    env.setMapSize(o.mapSize());
+                }
                 env.addFlags(o.openFlags);
             }
             env.addFlags(NOMETASYNC);

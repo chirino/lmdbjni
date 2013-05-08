@@ -21,6 +21,7 @@ package org.fusesource.lmdbjni.test;
 import junit.framework.TestCase;
 import org.fusesource.lmdbjni.leveldb.LMDB;
 import org.fusesource.lmdbjni.leveldb.LMDBFactory;
+import org.fusesource.lmdbjni.leveldb.LMDBOptions;
 import org.iq80.leveldb.*;
 import org.junit.Test;
 
@@ -30,6 +31,7 @@ import java.nio.ByteBuffer;
 import java.util.ArrayList;
 import java.util.Arrays;
 
+import static org.fusesource.lmdbjni.Constants.NOSYNC;
 import static org.fusesource.lmdbjni.Constants.bytes;
 import static org.fusesource.lmdbjni.Constants.string;
 
@@ -221,23 +223,21 @@ public class LevelDBTest extends TestCase {
 
         LMDBFactory.pushMemoryPool(1024 * 512);
         try {
-            Options options = new Options();
+            LMDBOptions options = new LMDBOptions();
             options.createIfMissing(true);
+            options.openFlags(NOSYNC); // this test would run too slow without this.
 
             LMDB db = (LMDB) factory.open(getTestDirectory(getName()), options);
             WriteOptions op = new WriteOptions();
-            for (int i = 0; i < 1024 * 1024; i++) {
-                if( i % (1024*1024/10) == 0) {
-                    System.out.println("at: " + i);
-                    System.out.println(db.getEnv().info());
-                    System.out.println(db.getEnv().stat());
-                    System.out.println(db.getDatabase().stat());
-                }
+            for (int i = 0; i < 1024 * 100; i++) {
                 byte[] key = ByteBuffer.allocate(4).putInt(i).array();
                 byte[] value = ByteBuffer.allocate(1024).putInt(-i).array();
                 db.put(key, value, op);
                 assertTrue(Arrays.equals(db.get(key), value));
             }
+            System.out.println(db.getEnv().info());
+            System.out.println(db.getEnv().stat());
+            System.out.println(db.getDatabase().stat());
             db.close();
         } finally {
             LMDBFactory.popMemoryPool();

@@ -50,7 +50,7 @@ public class LMDB implements DB {
                 env.setMapSize(o.mapSize());
                 env.addFlags(o.openFlags);
             }
-            env.addFlags(NOSYNC| NOMETASYNC);
+            env.addFlags(NOMETASYNC);
             env.open(path.getCanonicalPath());
             db = env.openDatabase("x");
         } catch (LMDBException e) {

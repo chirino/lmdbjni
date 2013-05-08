@@ -42,6 +42,9 @@ You just nee to add the following dependency and repository to your Maven `pom.x
 
 ## API Usage:
 
+The [Javadocs](http://lmdbjni.fusesource.org/maven/99-master-SNAPSHOT/apidocs/org/fusesource/lmdbjni/package-summary.html) 
+dont' have too many details yet.  Please send patches to improve them!
+
 Recommended Package imports:
 
     import org.fusesource.lmdbjni.*;

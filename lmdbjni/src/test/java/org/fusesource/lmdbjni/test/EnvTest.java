@@ -25,6 +25,7 @@ import org.junit.Test;
 import java.io.File;
 import java.io.IOException;
 import java.util.Arrays;
+import java.util.LinkedList;
 
 import static org.fusesource.lmdbjni.Constants.FIRST;
 import static org.fusesource.lmdbjni.Constants.NEXT;
@@ -55,29 +56,46 @@ public class EnvTest extends TestCase {
         env.open(path);
         Database db = env.openDatabase("foo");
 
-        Transaction tx = env.createTransaction();
-        Cursor cursor = db.openCursor(tx);
+        assertNull(db.put(bytes("Tampa"), bytes("green")));
+        assertNull(db.put(bytes("London"), bytes("red")));
 
-        for( Entry entry = cursor.get(FIRST); entry !=null; entry = cursor.get(NEXT) ) {
-            String key = string(entry.getKey());
-            String value = string(entry.getValue());
-            System.out.println(key+" = "+value);
-        }
-
-
-        db.put(bytes("Tampa"), bytes("green"));
-        db.put(bytes("London"), bytes("red"));
-        db.put(bytes("New York"), bytes("blue"));
+        assertNull(db.put(bytes("New York"), bytes("gray")));
+        assertNull(db.put(bytes("New York"), bytes("blue")));
+        assertEquals(db.put(bytes("New York"), bytes("silver"), NOOVERWRITE), bytes("blue"));
 
         assertEquals(db.get(bytes("Tampa")), bytes("green"));
         assertEquals(db.get(bytes("London")), bytes("red"));
         assertEquals(db.get(bytes("New York")), bytes("blue"));
+
+
+        Transaction tx = env.createTransaction();
+        Cursor cursor = db.openCursor(tx);
+
+        // Lets verify cursoring works..
+        LinkedList<String> keys = new LinkedList<String>();
+        LinkedList<String> values = new LinkedList<String>();
+        for( Entry entry = cursor.get(FIRST); entry !=null; entry = cursor.get(NEXT) ) {
+            keys.add(string(entry.getKey()));
+            values.add(string(entry.getValue()));
+        }
+        tx.commit();
+        assertEquals(Arrays.asList(new String[]{"London", "New York", "Tampa"}), keys);
+        assertEquals(Arrays.asList(new String[]{"red", "blue", "green"}), values);
 
         assertTrue(db.delete(bytes("New York")));
         assertNull(db.get(bytes("New York")));
 
         // We should not be able to delete it again.
         assertFalse(db.delete(bytes("New York")));
+
+        // put /w readonly transaction should fail.
+        tx = env.createTransaction(true);
+        try {
+            db.put(tx, bytes("New York"), bytes("silver"));
+            fail("Expected LMDBException");
+        } catch (LMDBException e) {
+            assertEquals( LMDBException.EACCES, e.getErrorCode());
+        }
 
         db.close();
         env.close();

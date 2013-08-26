@@ -154,8 +154,17 @@ public class Database extends NativeObject implements Closeable {
     }
 
     private byte[] put(Transaction tx, Value keySlice, Value valueSlice, int flags) {
-        mdb_put(tx.pointer(), pointer(), keySlice, valueSlice, flags);
-        return valueSlice.toByteArray();
+        int rc = mdb_put(tx.pointer(), pointer(), keySlice, valueSlice, flags);
+        if( (flags & MDB_NOOVERWRITE)!=0 && rc == MDB_KEYEXIST ) {
+            // Return the existing value if it was a dup insert attempt.
+            return valueSlice.toByteArray();
+        } else {
+            // If the put failed, throw an exception..
+            if( rc != 0) {
+                throw new LMDBException("put failed", rc);
+            }
+            return null;
+        }
     }
 
 

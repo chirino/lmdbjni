@@ -303,7 +303,7 @@
         <repository>
           <id>fusesource.nexus.snapshot</id>
           <name>FuseSource Community Snapshot Repository</name>
-          <url>http://repo.fusesource.com/nexus/content/groups/public-snapshots</url>
+          <url>https://repo.fusesource.com/nexus/content/groups/public-snapshots</url>
         </repository>
         <repository>
           <id>sonatype-nexus</id>
@@ -317,7 +317,7 @@
         <pluginRepository>
           <id>fusesource.nexus.snapshot</id>
           <name>FuseSource Community Snapshot Repository</name>
-          <url>http://repo.fusesource.com/nexus/content/groups/public-snapshots</url>
+          <url>https://repo.fusesource.com/nexus/content/groups/public-snapshots</url>
         </pluginRepository>
       </pluginRepositories>
     </profile>
